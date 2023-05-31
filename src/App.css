@@ -73,3 +73,28 @@
   width: 100%;
   margin: 30px auto 0 auto;
 }
+.inputLog {
+  display: block;
+  color: #000000;
+  margin: 0;
+  padding: var(--inputPaddingV) var(--inputPaddingH);
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--inputFontSize);
+  font-weight: inherit;
+  line-height: var(--inputLineHeight);
+  border: none;
+  border-radius: 0.4rem;
+  margin: 7px;
+  padding: 3px 7px;
+  height: 30px;
+}
+.divLogReg {
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}

@@ -6,6 +6,10 @@ import { setTextTyped } from './store/actions';
 import './App.css'
 import Result from './components/Result';
 import StartPopap from './components/StartPopap';
+import MainMemu from './components/MainMenu';
+import LoginPopup from './components/LoginPopup';
+import RegistrationPopup from './components/RegistrationPopup';
+
 const App = () => {
   const dispatch: any = useDispatch();
   const text = useSelector((state: RootState) => state.text.text);
@@ -17,10 +21,17 @@ const App = () => {
   const typedTextRef = useRef<string>('');
   const [startTime, setStartTime] = useState<number>(0);
   const isFinished = typedText.length === text.length;
-  let [close, setClose] = useState<string>('flex');
+  let [displayStatus, setDisplayStatus] = useState<string>('flex');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [popups, setPopups] = useState<{ [key: string]: boolean }>({});
+
   useEffect(() => {
     dispatch(fetchText());
   }, [dispatch]);
+
+  //Некоторый функции можно вынести в отдельные компоненты но время ограниченное ток что не успеваю
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const key = event.key;
     const currentChar = text[typedText.length];
@@ -42,19 +53,67 @@ const App = () => {
   };
   
   const closePopup = () => {
-    if(close = 'flex'){
-      setClose(close ='none');
+    if(displayStatus = 'flex'){
+      setDisplayStatus(displayStatus ='none');
       inputRef.current?.focus();
       if (startTime === 0) {
         setStartTime(Date.now());
       }
     }
   }
+  
+  const openPopups = (popupName: string) => {
+    if(isLoggedIn){
+      setIsLoggedIn(false);
+      setPopups((prevPopups) => ({
+        ...prevPopups,
+        [popupName]: false,
+      }));
+    }
+    else{
+      setPopups((prevPopups) => ({
+        ...prevPopups,
+        [popupName]: true,
+      }));
+    }
+    
+  };
+  const closePopups = (popupName: string) => {
+    setPopups((prevPopups) => ({
+      ...prevPopups,
+      [popupName]: false,
+    }));
+  };
+
+  const handleRegister = (data: { username: string, mail: string, password: string }) => {
+    // Здесь можно обработать зарегистрированные данные, например, отправить их на сервер или сохранить в локальное хранилище.
+    console.log('Registered:', data);
+    // Закрываем попап регистрации
+    closePopups('register');
+  };
+
+  const handleLogin = (data: { username: string, password: string }) => {
+    // Здесь можно обработать данные авторизации, например, отправить их на сервер для проверки.
+
+    // Предположим, что авторизация успешна
+    setIsLoggedIn(true);
+
+    setUsername(data.username);
+    // Закрываем попап для логина
+    closePopups('login');
+  };
+  const handleLogout = () => {
+    // Здесь можно добавить логику выхода из системы, например, очистить токены аутентификации и сбросить статус авторизации.
+    setIsLoggedIn(false);
+  };
   return (
     <>
+      <MainMemu openPopups={openPopups} name={username} IsLoggedIn={isLoggedIn}/>
+      <LoginPopup isOpen={popups['login']} onClose={closePopups} onLogin={handleLogin}/>
+      <RegistrationPopup isOpen={popups['register']} onClose={closePopups} onRegister={handleRegister}/>
       <div className='block'>
         <div className='container'>
-          <StartPopap closePopup={closePopup} close={close}/>
+          <StartPopap closePopup={closePopup} close={displayStatus}/>
           <h1 className='h1'>Тренажер слепой печати</h1>
           <h2 className='h2'>Колличество символов: {text.length}</h2>
           <p className='text'>
@@ -94,4 +153,3 @@ const App = () => {
 
 
 export default App;
-
